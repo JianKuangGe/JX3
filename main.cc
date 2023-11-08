@@ -1,10 +1,8 @@
 #include <ctime>
 #include <iostream>
-#include <sstream>
 #include <Windows.h>
 using std::tm;
 using std::time_t;
-using std::ctime;
 using std::cout;
 using std::endl;
 using std::cin;
@@ -21,30 +19,30 @@ int main()
     cout << "程序会在服务器时间到达目标时间时，自动点击鼠标左键两次" << endl;
     cout << "-------------------------------------------------------" << endl;
     // 设置目标时间，并将其转化为时间戳格式
-    time_t p_time = time(NULL);
-    tm* target_time = localtime(&p_time);
-    cin >> target_time -> tm_hour >> target_time -> tm_min >> target_time -> tm_sec;
+    time_t basic_timestamp = time(NULL);
+    tm* tm_target_time = localtime(&basic_timestamp);
+    cin >> tm_target_time -> tm_hour >> tm_target_time -> tm_min >> tm_target_time -> tm_sec;
     system("cls");
-    printf("目标时间：%02d:%02d:%02d\n",target_time->tm_hour,target_time->tm_min,target_time->tm_sec);
-    time_t target_time_timestamp = mktime(target_time);
-    // 循环体中持续判断当前时间与目标时间戳
+    printf("目标时间：%02d:%02d:%02d\n", tm_target_time->tm_hour, tm_target_time->tm_min, tm_target_time->tm_sec);
+    time_t target_time_timestamp = mktime(tm_target_time);
+    // 循环体中持续判断当前时间戳与目标时间戳
     int n = 0;
     while (true) {
-        //n += 1;
-        //cout << n << endl;
-        time_t now_time = time(NULL);
-        tm *p = gmtime(&now_time);
-        p -> tm_hour += 8;
-        time_t beijing_time = mktime(p);
-        cout << "\033[2;1H\r";
-        printf("服务器当前时间：%02d:%02d:%02d\n", p ->tm_hour,p->tm_min,p->tm_sec);
-        if (target_time_timestamp == beijing_time) {
+        time_t now_timestamp = time(NULL);
+        tm *tm_now_time = gmtime(&now_timestamp);
+        // 将时间转换成北京时间的时间戳
+        tm_now_time -> tm_hour += 8;
+        time_t now_timestamp_beijing = mktime(tm_now_time);
+        cout << "\033[2;1H\r"; // 使光标挪到第二行行首
+        printf("服务器当前时间：%02d:%02d:%02d\n", tm_now_time ->tm_hour, tm_now_time->tm_min, tm_now_time->tm_sec);
+        if (target_time_timestamp == now_timestamp_beijing) {
             cout << "触发成功" << endl;
             mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP,0,0,0,0);
             mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP,0,0,0,0);
             break;
         }
     } 
+    // 等待控制台关闭
     char i;
     cin >> i;
 }
